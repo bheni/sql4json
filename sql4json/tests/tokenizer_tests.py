@@ -1,6 +1,6 @@
 import unittest
 
-from s4j.tokenizer import *
+from sql4json.tokenizer import *
 
 class TokenizerTests(unittest.TestCase):
     def test_tokenizer_init(self):

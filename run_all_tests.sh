@@ -1,1 +1,1 @@
-python -m unittest discover -s s4j.tests -p "*.py"
+python -m unittest discover -s sql4json.tests -p "*.py"
