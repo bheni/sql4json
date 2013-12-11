@@ -66,9 +66,9 @@ class TokenizerTests(unittest.TestCase):
         self.assertEqual(["test","==","'blue ball'","or","test","==",'"123+123 == 246"'], tokenizer)
 
     def test_tokenize_strings_with_parenthesis(self):
-        tokenizer = Tokenizer('''test==1&&(test2==3 or testA=="b") && (x ==3)''');
+        tokenizer = Tokenizer('''test==1&&(test2==3 or (testA=="b")) && (x ==3)''');
 
-        self.assertEqual(["test","==","1","&&","(","test2","==","3","or","testA","==",'"b"',")","&&","(","x","==","3",")"], tokenizer)
+        self.assertEqual(["test","==","1","&&","(","test2","==","3","or","(","testA","==",'"b"',")",")","&&","(","x","==","3",")"], tokenizer)
 
     def test_tokenize_full_sql_query(self):
         tokenizer = Tokenizer('''

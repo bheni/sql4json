@@ -25,6 +25,10 @@ class Tokenizer(object):
         else:
             return Tokenizer.TOKEN_TYPES.SYMBOL
 
+    @staticmethod
+    def is_paren_type(token_type):
+        return token_type in (Tokenizer.TOKEN_TYPES.PARENOPEN,Tokenizer.TOKEN_TYPES.PARENCLOSE)
+
     def __init__(self, str_to_parse):
         self.unparsed_string = str_to_parse
         self.tokens = []
@@ -55,7 +59,7 @@ class Tokenizer(object):
             else:
                 token_type = Tokenizer.get_token_type( char )
 
-                if token_type != current_token_type and current_token_type not in Tokenizer.EMPTY_STIRNG_TYPES:
+                if (token_type != current_token_type or Tokenizer.is_paren_type(token_type)) and current_token_type not in Tokenizer.EMPTY_STIRNG_TYPES:
                     start = self._add_token(start, i)
 
                 if token_type == Tokenizer.TOKEN_TYPES.QUOTEDSTRING:
