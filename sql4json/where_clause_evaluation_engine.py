@@ -5,9 +5,15 @@ from exceptions import WhereClauseException
 
 from boolean_expressions.evaluation_engine import EvaluationEngine
 
+
+'''
+This class receives callbacks from the BooleanExpressionTree in order to determine if a condition,
+is true or false for a specific node.  The BooleanExpressionTree takes care of combining the results
+of each condition to determine the results of the entire boolean expression.
+'''
 class WhereClauseEvaluationEngine(EvaluationEngine):
     OPERATORS = CEnum(("EQ", "NEQ", "GT", "LT", "GTE", "LTE", "IN"))
-    OPERATOR_TOKENS = ("==", "!=", ">", "<", ">=", "<=", "IN")
+    OPERATOR_TOKENS = ("==", "!=", ">", "<", ">=", "<=", "in")
     OPERATOR_TOKENS_SET = frozenset(OPERATOR_TOKENS)
 
     OPERAND_TYPES = CEnum(("STRING","INT","FLOAT","BOOL","NULL","DICTIONARY","LIST"))
@@ -15,7 +21,7 @@ class WhereClauseEvaluationEngine(EvaluationEngine):
 
     def get_operator_index(self, tokens):
         for i, token in enumerate(tokens):
-            if token in WhereClauseEvaluationEngine.OPERATOR_TOKENS_SET:
+            if token.lower() in WhereClauseEvaluationEngine.OPERATOR_TOKENS_SET:
                 return i
 
         return -1
@@ -84,7 +90,7 @@ class WhereClauseEvaluationEngine(EvaluationEngine):
         elif operator_index == len(tokens) - 1:
             raise WhereClauseException('"%s" missing roperand' % ' '.join(tokens))
         else:
-            operator = WhereClauseEvaluationEngine.OPERATOR_TOKENS.index(tokens[operator_index])
+            operator = WhereClauseEvaluationEngine.OPERATOR_TOKENS.index(tokens[operator_index].lower())
             loperand_tokens = tokens[0:operator_index]
             roperand_tokens = tokens[operator_index + 1:]
 
@@ -114,7 +120,7 @@ class WhereClauseEvaluationEngine(EvaluationEngine):
         loperand_type, loperand_value = self.get_operand_type_and_value(node, loperand_tokens)
         roperand_type, roperand_value = self.get_operand_type_and_value(node, roperand_tokens)
 
-        if loperand in WhereClauseEvaluationEngine.NUMBER_TYPES and roperand in WhereClauseEvaluationEngine.NUMBER_TYPES:
+        if loperand_type in WhereClauseEvaluationEngine.NUMBER_TYPES and roperand_type in WhereClauseEvaluationEngine.NUMBER_TYPES:
             return loperand_value > roperand_value
 
         raise WhereClauseException("%s > %s is an invalid operation for these types" % (''.join(loperand_tokens), ''.join(roperand_tokens)) )
@@ -126,7 +132,7 @@ class WhereClauseEvaluationEngine(EvaluationEngine):
         loperand_type, loperand_value = self.get_operand_type_and_value(node, loperand_tokens)
         roperand_type, roperand_value = self.get_operand_type_and_value(node, roperand_tokens)
 
-        if loperand in WhereClauseEvaluationEngine.NUMBER_TYPES and roperand in WhereClauseEvaluationEngine.NUMBER_TYPES:
+        if loperand_type in WhereClauseEvaluationEngine.NUMBER_TYPES and roperand_type in WhereClauseEvaluationEngine.NUMBER_TYPES:
             return loperand_value < roperand_value
 
         raise WhereClauseException("%s < %s is an invalid operation for these types" % (''.join(loperand_tokens), ''.join(roperand_tokens)) )

@@ -39,7 +39,7 @@ class DataQueryEngineTests(unittest.TestCase):
 
         self.assertEqual([{"id":1, "name":"brian"},{"id":2,"name":"DRo"},{"id":3,"name":"Logan"}], query_engine.get_results())
 
-    def test_select_from_where(self):
+    def test_where_equality(self):
         data = {
             "people":[
                 {"id":1, "name":"brian", "awesome":True},
@@ -52,13 +52,97 @@ class DataQueryEngineTests(unittest.TestCase):
 
         self.assertEqual([{"id":1, "name":"brian"},{"id":2,"name":"DRo"}], query_engine.get_results())
 
-    # def test_where_equality(self):
-    # def test_where_inequality(self):
-    # def test_where_greater_than(self):
-    # def test_where_less_than(self):
-    # def test_where_greater_than_or_equal(self):
-    # def test_where_less_than_or_equal(self):
-    # def test_where_key_in_object(self):
+    def test_where_inequality(self):
+        data = {
+            "people":[
+                {"id":1, "name":"brian", "awesome":True},
+                {"id":2,"name":"DRo", "awesome":True},
+                {"id":3,"name":"Logan", "awesome":False}
+            ], 
+            "other":68
+        }
+        query_engine = DataQueryEngine(data, "SELECT id,name FROM people WHERE awesome!=False")
+
+        self.assertEqual([{"id":1, "name":"brian"},{"id":2,"name":"DRo"}], query_engine.get_results())
+
+    def test_where_greater_than(self):
+        data = {
+            "people":[
+                {"id":1, "name":"brian", "awesome":True},
+                {"id":2,"name":"DRo", "awesome":True},
+                {"id":3,"name":"Logan", "awesome":False}
+            ], 
+            "other":68
+        }
+        query_engine = DataQueryEngine(data, "SELECT id,name FROM people WHERE id>1")
+
+        self.assertEqual([{"id":2,"name":"DRo"},{"id":3,"name":"Logan"}], query_engine.get_results())
+    
+    def test_where_less_than(self):
+        data = {
+            "people":[
+                {"id":1, "name":"brian", "awesome":True},
+                {"id":2,"name":"DRo", "awesome":True},
+                {"id":3,"name":"Logan", "awesome":False}
+            ], 
+            "other":68
+        }
+        query_engine = DataQueryEngine(data, "SELECT id,name FROM people WHERE id<3")
+
+        self.assertEqual([{"id":1, "name":"brian"},{"id":2,"name":"DRo"}], query_engine.get_results())
+
+    def test_where_greater_than_or_equal(self):
+        data = {
+            "people":[
+                {"id":1, "name":"brian", "awesome":True},
+                {"id":2,"name":"DRo", "awesome":True},
+                {"id":3,"name":"Logan", "awesome":False}
+            ], 
+            "other":68
+        }
+        query_engine = DataQueryEngine(data, "SELECT id,name FROM people WHERE id>=2")
+
+        self.assertEqual([{"id":2,"name":"DRo"},{"id":3,"name":"Logan"}], query_engine.get_results())
+
+    def test_where_less_than_or_equal(self):
+        data = {
+            "people":[
+                {"id":1, "name":"brian", "awesome":True},
+                {"id":2,"name":"DRo", "awesome":True},
+                {"id":3,"name":"Logan", "awesome":False}
+            ], 
+            "other":68
+        }
+        query_engine = DataQueryEngine(data, "SELECT id,name FROM people WHERE id<=2")
+
+        self.assertEqual([{"id":1, "name":"brian"},{"id":2,"name":"DRo"}], query_engine.get_results())
+
+    def test_where_key_in_object(self):
+        data = {
+            "people":[
+                {"id":1, "name":"brian", "awesome":True, "extra_key":None},
+                {"id":2,"name":"DRo", "awesome":True},
+                {"id":3,"name":"Logan", "awesome":False}
+            ], 
+            "other":68
+        }
+        query_engine = DataQueryEngine(data, "SELECT id,name FROM people WHERE extra_key IN /")
+
+        self.assertEqual([{"id":1, "name":"brian"}], query_engine.get_results())
+
+    def test_not_in_where_clause(self):
+        data = {
+            "people":[
+                {"id":1, "name":"brian", "awesome":True, "extra_key":None},
+                {"id":2,"name":"DRo", "awesome":True},
+                {"id":3,"name":"Logan", "awesome":False}
+            ], 
+            "other":68
+        }
+
+        query_engine = DataQueryEngine(data, "SELECT id,name FROM people WHERE !(extra_key IN /)")
+
+        self.assertEqual([{"id":2,"name":"DRo"},{"id":3,"name":"Logan"}], query_engine.get_results())
 
     def test_where_operands_are_verified(self):
         try:

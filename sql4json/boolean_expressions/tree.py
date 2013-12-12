@@ -134,6 +134,9 @@ class BooleanExpressionTree(Node):
             if done:
                 break;
 
+        if expression_tokens[0] == '(' and expression_tokens[-1] == ')' and len(expression_tokens) > 2:
+            expression_tokens = expression_tokens[1:-1]
+
         return token_index, ExpressionNode(expression_tokens, self.evaluation_engine)
 
     def _add_new_node_to_tree(self, new_node, root_node, last_operator):

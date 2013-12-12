@@ -95,27 +95,27 @@ class BooleanExpressionTreeTests(unittest.TestCase):
     def test_process_expression_with_paranthesis(self):
         tree = BooleanExpressionTree(["(","x","==","7",")"], test_engine)
 
-        self.assertEqual("( x == 7 )", str(tree))
+        self.assertEqual("x == 7", str(tree))
 
     def test_process_expression_preceeded_by_unary_not(self):
         tokenizer = Tokenizer("!(5 == 6)")
         tree = BooleanExpressionTree(list(tokenizer), test_engine)
 
-        self.assertEqual("!( 5 == 6 )", str(tree))
+        self.assertEqual("!(5 == 6)", str(tree))
         self.assertTrue( tree.evaluate(None) )
 
     def test_process_two_expressions_and_binary_and(self):
         tokenizer = Tokenizer("!(5 == 6) && abs(-1) == 1")
         tree = BooleanExpressionTree(list(tokenizer), test_engine)
 
-        self.assertEqual("(!( 5 == 6 ) && abs ( - 1 ) == 1)", str(tree))
+        self.assertEqual("(!(5 == 6) && abs ( - 1 ) == 1)", str(tree))
         self.assertTrue( tree.evaluate(None) )
 
     def test_process_two_expressions_and_binary_or(self):
         tokenizer = Tokenizer("!( 5 == 6 ) || abs(-1) == 1")
         tree = BooleanExpressionTree(list(tokenizer), test_engine)
 
-        self.assertEqual("(!( 5 == 6 ) || abs ( - 1 ) == 1)", str(tree))
+        self.assertEqual("(!(5 == 6) || abs ( - 1 ) == 1)", str(tree))
         self.assertTrue( tree.evaluate(None) )
 
     def test_only_necessary_conditions_evaluated(self):
