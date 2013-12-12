@@ -1,7 +1,7 @@
 import json as regular_json
 
 try:
-    import jujson as json_loader
+    import ujson as json_loader
 except ImportError:
     json_loader = regular_json
 
