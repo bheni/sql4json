@@ -5,7 +5,7 @@ Base class for all nodes created and used by the binary expression
 BooleanExpressionTree defines an interface used for evaluating the tree.
 '''
 class Node(object):
-    def evaluate(self):
+    def evaluate(self, evaluation_param):
         raise NotImplementedError("evaluate not implemented")
 
     def add_child(self, node):
@@ -23,8 +23,8 @@ class ExpressionNode(Node):
         self.expression_tokens = expression_tokens
         self.evaluation_engine = evaluation_engine
 
-    def evaluate(self):
-        return self.evaluation_engine.evaluate( self.expression_tokens )
+    def evaluate(self, evaluation_param):
+        return self.evaluation_engine.evaluate( self.expression_tokens, evaluation_param )
 
     def __str__(self):
         return ' '.join(self.expression_tokens)
@@ -33,15 +33,15 @@ class ExpressionNode(Node):
 UnaryOperatorNodes evaluate boolean operations on a single operand node
 '''
 class UnaryOperatorNode(Node):
-    OPERATORS = ["!"]
+    OPERATORS = frozenset(("!"))
 
     def __init__(self, operator, operand_node=None):
         self.operator = operator
         self.operand_node = operand_node
 
-    def evaluate(self):
+    def evaluate(self, evaluation_param):
         if self.operator == "!":
-            return not self.operand_node.evaluate()
+            return not self.operand_node.evaluate(evaluation_param)
         else:
             raise Exception("Unary operator %s not defined" % self.operator )
 
@@ -63,18 +63,18 @@ class UnaryOperatorNode(Node):
 BinaryOperatorNodes evaluate boolean operations on two operand nodes
 '''
 class BinaryOperatorNode(Node):
-    OPERATORS = ["and", "&&", "or", "||"]
+    OPERATORS = frozenset(("and", "&&", "or", "||"))
 
     def __init__(self, operator, operand_node1=None, operand_node2=None):
         self.operator = operator.lower()
         self.operand_node1 = operand_node1
         self.operand_node2 = operand_node2
 
-    def evaluate(self):
+    def evaluate(self, evaluation_param):
         if self.operator == "and" or self.operator == "&&":
-            return self.operand_node1.evaluate() and self.operand_node2.evaluate()
+            return self.operand_node1.evaluate( evaluation_param ) and self.operand_node2.evaluate( evaluation_param )
         elif self.operator == "or" or self.operator == "||":
-            return self.operand_node1.evaluate() or self.operand_node2.evaluate()
+            return self.operand_node1.evaluate( evaluation_param ) or self.operand_node2.evaluate( evaluation_param )
         else:
             raise Exception("Binary operator %s not defined" % self.operator)
 

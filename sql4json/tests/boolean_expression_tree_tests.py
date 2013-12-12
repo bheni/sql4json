@@ -8,7 +8,7 @@ from sql4json.boolean_expressions.evaluation_engine import *
 from sql4json.boolean_expressions.exceptions import *
 
 class TestEvaluationEngine(object):
-    def evaluate(self, tokens):
+    def evaluate(self, tokens, evaluation_param):
         return eval( ''.join(tokens) )
 
 test_engine = TestEvaluationEngine()
@@ -18,12 +18,12 @@ class ExpressionNodeTests(unittest.TestCase):
         tokenizer = Tokenizer("5 == 6")
         node = ExpressionNode( list(tokenizer),  test_engine)
 
-        self.assertFalse( node.evaluate() )
+        self.assertFalse( node.evaluate(None) )
 
         tokenizer = Tokenizer('"matching strings" == "matching strings"')
         node = ExpressionNode( list(tokenizer),  test_engine)
 
-        self.assertTrue( node.evaluate() )
+        self.assertTrue( node.evaluate(None) )
 
     def test_str(self):
         tokenizer = Tokenizer("5 == 6")
@@ -41,11 +41,11 @@ class BinaryOperatorNodeTests(unittest.TestCase):
 
         binary_node = BinaryOperatorNode("&&", node1, node2)
 
-        self.assertFalse( binary_node.evaluate() )
+        self.assertFalse( binary_node.evaluate(None) )
 
         binary_node = BinaryOperatorNode("||", node1, node2)
 
-        self.assertTrue( binary_node.evaluate() )                
+        self.assertTrue( binary_node.evaluate(None) )                
 
     def test_str(self):
         tokenizer = Tokenizer("5 == 6")
@@ -64,13 +64,13 @@ class UnaryOperatorNodeTests(unittest.TestCase):
         node = ExpressionNode( list(tokenizer),  test_engine)
         unary_node = UnaryOperatorNode("!", node)
 
-        self.assertTrue( unary_node.evaluate() )
+        self.assertTrue( unary_node.evaluate(None) )
 
         tokenizer = Tokenizer('"matching strings" == "matching strings"')
         node = ExpressionNode( list(tokenizer),  test_engine)
         unary_node = UnaryOperatorNode("!", node)
 
-        self.assertFalse( unary_node.evaluate() )
+        self.assertFalse( unary_node.evaluate(None) )
 
     def test_str(self):
         tokenizer = Tokenizer("5 == 6")
@@ -102,35 +102,35 @@ class BooleanExpressionTreeTests(unittest.TestCase):
         tree = BooleanExpressionTree(list(tokenizer), test_engine)
 
         self.assertEqual("!( 5 == 6 )", str(tree))
-        self.assertTrue( tree.evaluate() )
+        self.assertTrue( tree.evaluate(None) )
 
     def test_process_two_expressions_and_binary_and(self):
         tokenizer = Tokenizer("!(5 == 6) && abs(-1) == 1")
         tree = BooleanExpressionTree(list(tokenizer), test_engine)
 
         self.assertEqual("(!( 5 == 6 ) && abs ( - 1 ) == 1)", str(tree))
-        self.assertTrue( tree.evaluate() )
+        self.assertTrue( tree.evaluate(None) )
 
     def test_process_two_expressions_and_binary_or(self):
         tokenizer = Tokenizer("!( 5 == 6 ) || abs(-1) == 1")
         tree = BooleanExpressionTree(list(tokenizer), test_engine)
 
         self.assertEqual("(!( 5 == 6 ) || abs ( - 1 ) == 1)", str(tree))
-        self.assertTrue( tree.evaluate() )
+        self.assertTrue( tree.evaluate(None) )
 
     def test_only_necessary_conditions_evaluated(self):
         tokenizer = Tokenizer('!( 5 == 6 ) || unimplementedfunction("shouldnt get run because first condition passes")')
         tree = BooleanExpressionTree(list(tokenizer), test_engine)
-        self.assertTrue( tree.evaluate() )
+        self.assertTrue( tree.evaluate(None) )
 
         tokenizer = Tokenizer('( 5 == 6 ) && unimplementedfunction("shouldnt get run because first condition passes")')
         tree = BooleanExpressionTree(list(tokenizer), test_engine)
-        self.assertFalse( tree.evaluate() )
+        self.assertFalse( tree.evaluate(None) )
 
         try:
             tokenizer = Tokenizer('(5 == 6) || unimplementedfunction("shouldnt get run because first condition passes")')
             tree = BooleanExpressionTree(list(tokenizer), test_engine)
-            tree.evaluate()
+            tree.evaluate(None)
             self.fail()
         except Exception, e:
             pass
@@ -138,7 +138,7 @@ class BooleanExpressionTreeTests(unittest.TestCase):
         try:
             tokenizer = Tokenizer('!(5 == 6) && unimplementedfunction("shouldnt get run because first condition passes")')
             tree = BooleanExpressionTree(list(tokenizer), test_engine)
-            tree.evaluate()
+            tree.evaluate(None)
             self.fail()
         except Exception, e:
             pass
@@ -147,14 +147,14 @@ class BooleanExpressionTreeTests(unittest.TestCase):
         try:
             tokenizer = Tokenizer('unimplementedfunction() || True || False')
             tree = BooleanExpressionTree(list(tokenizer), test_engine)
-            tree.evaluate()
+            tree.evaluate(None)
             self.fail()
         except Exception, e:
             pass
 
         tokenizer = Tokenizer('unimplementedfunction() || (True || False)')
         tree = BooleanExpressionTree(list(tokenizer), test_engine)
-        self.assertTrue( tree.evaluate() )
+        self.assertTrue( tree.evaluate(None) )
 
     def test_complex_expression(self):
         tokenizer = Tokenizer('value == 2 && !(key in set or y == "some string" || myfunction(param1,"const param 2"))')

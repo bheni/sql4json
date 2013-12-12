@@ -163,9 +163,9 @@ class BooleanExpressionTree(Node):
 
         return root_node, last_operator
 
-    def evaluate(self):
+    def evaluate(self, evaluation_param):
         if self.root != None:
-            return self.root.evaluate()
+            return self.root.evaluate(evaluation_param)
         else:
             raise BooleanExpressionException('empty expressions can not be evaluated')
 
