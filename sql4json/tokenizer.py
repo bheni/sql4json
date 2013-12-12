@@ -6,9 +6,9 @@ Basic class for splitting a string up into tokens.
 class Tokenizer(object):
     TOKEN_TYPES = CEnum(("NONE","ALPHANUM","SYMBOL","WHITESPACE","QUOTEDSTRING","PARENOPEN","PARENCLOSE"))
 
-    QUOTE_CHARS = ('"', "'")
+    QUOTE_CHARS = frozenset(('"', "'"))
 
-    EMPTY_STIRNG_TYPES = (TOKEN_TYPES.WHITESPACE, TOKEN_TYPES.NONE)
+    EMPTY_STIRNG_TYPES = frozenset((TOKEN_TYPES.WHITESPACE, TOKEN_TYPES.NONE))
 
     @staticmethod
     def get_token_type(char):
