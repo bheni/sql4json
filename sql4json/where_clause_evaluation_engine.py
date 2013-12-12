@@ -108,10 +108,12 @@ class WhereClauseEvaluationEngine(EvaluationEngine):
         loperand_type, loperand_value = self.get_operand_type_and_value(node, loperand_tokens)
         roperand_type, roperand_value = self.get_operand_type_and_value(node, roperand_tokens)
 
-        if  loperand_type == roperand_type or (loperand in WhereClauseEvaluationEngine.NUMBER_TYPES and roperand in WhereClauseEvaluationEngine.NUMBER_TYPES):
+        if  loperand_type == roperand_type or (loperand_type in WhereClauseEvaluationEngine.NUMBER_TYPES and roperand_type in WhereClauseEvaluationEngine.NUMBER_TYPES):
             return loperand_value == roperand_value
+        else:
+            return False
 
-        raise WhereClauseException("%s and %s are not comparable" % (''.join(loperand_tokens), ''.join(roperand_tokens)) )
+        #raise WhereClauseException("%s and %s are not comparable" % (''.join(loperand_tokens), ''.join(roperand_tokens)) )
 
     def evaluate_inequality(self, node, loperand_tokens, roperand_tokens):
         return not self.evaluate_equality(node, loperand_tokens, roperand_tokens)
