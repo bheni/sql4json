@@ -1,4 +1,4 @@
-from sql4json.tokenizer import Tokenizer
+from tokenizer import Tokenizer
 
 PATH_SEPERATORS = frozenset(('/','.','\\'))
 
@@ -19,7 +19,7 @@ def get_element_by_path_tokens(data, path_tokens):
                 raise Exception("Invalid tokens used as dictionary path")
 
         else:
-            if token in current:
+            if current != None and token in current:
                 current = current[token]
             else:
                 current = None
