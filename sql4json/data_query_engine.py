@@ -1,5 +1,6 @@
 from utils import *
 
+from exceptions import *
 from sql_statement import SQLStatement
 from tokenizer import Tokenizer
 from where_clause_evaluation_engine import WhereClauseEvaluationEngine
