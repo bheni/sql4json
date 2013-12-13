@@ -6,7 +6,7 @@ In choosing to make this project public I have refactored it so that the sql4jso
 
 ## Installation ##
 
-    pip install sql4json
+    sudo pip install sql4json
     
 ## Using the sql4json package in your code ##
 ##### Querying JSON  #####
