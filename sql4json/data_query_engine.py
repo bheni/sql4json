@@ -15,21 +15,21 @@ class DataQueryEngine(object):
         self.sql_statement = SQLStatement(sql_str)
         self.results = None
         
-        self.init_from_root()
+        self.init_from_roots()
         self.init_where_boolean_tree()
         
         self.query()
 
-    def init_from_root(self):
+    def init_from_roots(self):
         from_section = self.sql_statement.get_from_section()
 
         if from_section != None and len(from_section) > 0:
-            exists, self.from_root = get_element_by_path( self.data, from_section )
+            exists, self.from_roots = get_elements_by_path( self.data, from_section )
 
-            if not exists or self.from_root == None:
+            if not exists or len(self.from_roots) == 0:
                 raise FromClauseException("Could not find path %s." % from_section)
         else:
-            self.from_root = self.data
+            self.from_roots = [self.data]
 
     def init_where_boolean_tree(self):
         self.where_tree = None
@@ -46,20 +46,22 @@ class DataQueryEngine(object):
         select_section = self.sql_statement.get_select_section()
         select_items = split_on_any( select_section, frozenset((',',' ','\t','\n','\r')) )
 
-        if isinstance(self.from_root, tuple) or isinstance(self.from_root, list):    
-            self.results = []
-            
-            for node in self.from_root:
-                result_data = self.query_node(node, select_items)
+        self.results = []
 
-                if result_data != None:
-                    self.results.append( result_data )
+        for root in self.from_roots:
+            if isinstance(root, tuple) or isinstance(root, list):    
+                
+                for node in root:
+                    result_data = self.query_node(node, select_items)
 
-        elif isinstance(self.from_root, dict):
-            self.results = self.query_node(self.from_root, select_items)
+                    if result_data != None:
+                        self.results.append( result_data )
 
-            if self.results == None:
-                self.results = {}
+            elif isinstance(root, dict):
+                results = self.query_node(root, select_items)
+
+                if results != None:
+                    self.results.append(results)
 
     def query_node(self, node, select_items):
         if self.matches_where(node):

@@ -52,12 +52,14 @@ class WhereClauseEvaluationEngine(EvaluationEngine):
         return self.get_value_for_path_and_type(node, operand)
 
     def get_value_for_path_and_type(self, node, path_tokens):
-        found, value = get_element_by_path_tokens(node, path_tokens)
+        found, values = get_elements_by_path_tokens(node, path_tokens)
 
         if not found:
             return None, None
+            
+        value = values[0]
 
-        elif value == None:
+        if value == None:
             return WhereClauseEvaluationEngine.NULL, value
 
         elif isinstance(value, bool):
@@ -152,6 +154,6 @@ class WhereClauseEvaluationEngine(EvaluationEngine):
             raise WhereClauseException('"in" operator can only be used on objects. Item at path "%s"' % ' '.join(roperand_tokens))
 
         else:
-            found, node = get_element_by_path_tokens(roperand_value, loperand_tokens)
+            found, nodes = get_elements_by_path_tokens(roperand_value, loperand_tokens)
             return found
 

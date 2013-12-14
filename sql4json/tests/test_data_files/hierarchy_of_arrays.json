@@ -1,0 +1,22 @@
+{
+ "school_id": 123,
+ "type": "High School",
+ "people": [
+  {
+   "type": "teachers",
+   "records": [
+    {"id":1, "first_name":"Aaron", "last_name":"Anderson"},
+    {"id":2, "first_name":"Bill", "last_name":"Bixby"},
+    {"id":3, "first_name":"Chris", "last_name":"Christofferson"}
+   ]
+  },
+  {
+    "type": "students",
+    "records": [
+    {"id":4, "first_name":"David", "last_name":"Davidson"},
+    {"id":5, "first_name":"Eric", "last_name":"Ericson"},
+    {"id":6, "first_name":"Frank", "last_name":"Franklin"}
+   ]
+  }
+ ]
+}

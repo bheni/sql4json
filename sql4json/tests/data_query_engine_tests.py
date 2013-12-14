@@ -8,13 +8,13 @@ class DataQueryEngineTests(unittest.TestCase):
         data = {"a": 1, "b":2, "c":{"ba":"string", "bb":False, "bc":None, "bd":[]}}
         query_engine = DataQueryEngine(data, "SELECT *")
 
-        self.assertEqual(data, query_engine.get_results())
+        self.assertEqual([data], query_engine.get_results())
 
     def test_select_property(self):
         data = {"a": 1, "b":2, "c":{"ba":"string", "bb":False, "bc":None, "bd":[]}}
         query_engine = DataQueryEngine(data, "SELECT a")
 
-        self.assertEqual({"a":1}, query_engine.get_results())
+        self.assertEqual([{"a":1}], query_engine.get_results())
 
     def test_select_on_array(self):
         data = [

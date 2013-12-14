@@ -1,0 +1,22 @@
+[
+    {
+        "records": [
+            {
+                "first_name": "David",
+                "id": 4,
+                "last_name": "Davidson"
+            },
+            {
+                "first_name": "Eric",
+                "id": 5,
+                "last_name": "Ericson"
+            },
+            {
+                "first_name": "Frank",
+                "id": 6,
+                "last_name": "Franklin"
+            }
+        ],
+        "type": "students"
+    }
+]
