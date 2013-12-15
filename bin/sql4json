@@ -2,8 +2,10 @@
 
 import sys
 import json
+import traceback
 
 from sql4json.sql4json import Sql4Json
+from sql4json.flat_data import FlatData
 
 def readjson_from_stdin():
     lines = []
@@ -12,28 +14,142 @@ def readjson_from_stdin():
 
     return '\r\n'.join(lines)
 
-def print_error(error_str):
-    print >> sys.stderr, ('\033[91m' + error_str + '\x1B[m')
+def print_error(error_str='',include_newline=True):
+    output_str = '\033[91m' + error_str + '\x1B[m'
+    print_info(output_str)
 
-def print_info(info_str):
-    print >> sys.stderr, (info_str)
+def print_info(info_str='',include_newline=True):
+    if include_newline:
+        print >> sys.stderr, (info_str)
+    else:
+        sys.stderr.write(info_str)
+
+def print_csv_row(row):
+    column_values = []
+
+    for item in row:
+        if item == None:
+            column_values.append('')
+        else:
+            str_val = str(item)
+            column_values.append( str_val.replace(',','%2C') )
+
+    print ','.join(column_values)
 
 def print_usage():
-    print_info( 'usage: sql4json "SQL"' )
-    print_info( 'example: sql4json "SELECT id, name FROM some/path WHERE condition == true" <input_file.json' )
-    print_info( 'example: echo \'[{"id":1,"name":"test"},{"id":2,"name":"other"}]\'sql4json "SELECT id, name FROM some/path WHERE id==1"' )
+    print_info( '\r\nusage: sql4json options [SQL*]' )
+    print_info( 
+'''\r\n* If SQL is not specified on the command line, an interactive session will begin where
+you will be prompted to provide SQL queries. Multiple queries can be run on the same data
+set until "quit" or "exit" is enterred''' )
 
-if len(sys.argv) != 2:
-    print_error("No SQL found")
-    print_usage()
-    exit(1)
-else:
+    print_info( '\r\noptions:')
+    print_info( '\t--help             - Prints this help message')
+    print_info( '\t--csv              - Prints this help message')
+    print_info( '\t--csv-with-headers - Prints this help message')
+
+    print_info( '\r\nexamples:')
+
+    print_info( '\r\n\tRun SQL query on data from file')
+    print_info( '\t\tsql4json "SELECT id, name FROM some/path WHERE condition == true" <input_file.json' )
+    print_info( '\t\tcat input_file.json|sql4json "SELECT id, name FROM some/path WHERE condition == true"' )
+
+    print_info( '\r\n\tRun SQL query on data from command line')
+    print_info( '\t\techo \'[{"id":1,"name":"test"},{"id":2,"name":"other"}]\'sql4json "SELECT id, name FROM some/path WHERE id==1"' )
+
+    print_info( '\r\n\tInteractive session with data from the web')
+    print_info( '\t\tsql4json' )
+    print_info()
+
+SUPPORTED_OPTIONS = ('help','csv','csv-with-headers')
+SUPPORTED_OPTION_SET = frozenset(SUPPORTED_OPTIONS)
+
+def parse_command_line():
+    options = set()
+    sql = None
+
+    for i in range(1, len(sys.argv)):
+        arg = sys.argv[i]
+
+        if arg.startswith('--'):
+            option_string = arg[2:].lower()
+
+            if option_string not in SUPPORTED_OPTION_SET:
+                print_error("Unknown option %s" % arg)
+                exit(1)
+            else:
+                options.add(option_string)
+
+        elif sql == None:
+            sql = arg
+        else:
+            print_error("Unexpected paramater %s" % arg)
+
+    return options, sql
+
+def run_single_query(options, sql_str):
     try:
-        sql_str = sys.argv[1]
         json_str = readjson_from_stdin().strip()
         query = Sql4Json(json_str, sql_str)
-        print str(query)
+
+        if 'csv' in options or 'csv-with-headers' in options:
+            flat_data = FlatData(query.get_results())
+
+            if 'csv-with-headers' in options:
+                print_csv_row(flat_data.get_headers())
+
+            rows = flat_data.get_rows()
+
+            for row in rows:
+                print_csv_row(row)
+        else:
+            print str(query)
 
     except Exception, e:
+        traceback.print_exc()
         print_error( str(e) )
         exit(1)
+
+def prompt_for_input(prompt_text):
+    print_info(prompt_text, False)
+
+    #When reading data from a pipe or a file redirect stdin will be consumed until EOF so need to reopen
+    try:
+        if sys.platform == 'win32':
+            with open("CON:", "r") as stdin:
+                return stdin.readline()
+        else:
+            with open('/dev/tty','r') as stdin:
+                return stdin.readline()
+    except:
+        raise Exception('Unable to read from stdin')
+
+def run_interactive_session(options):
+    json_str = readjson_from_stdin().strip()
+
+    while True: 
+        try:
+            input_str = prompt_for_input('\r\nsql4json>').strip()
+            in_lower = input_str.lower()
+
+            if in_lower == 'exit' or in_lower == 'quit':
+                return
+            else:
+                query = Sql4Json(json_str, input_str)
+                print str(query)
+
+        except Exception, e:
+            #traceback.print_exc()
+            print_error( str(e) )
+
+
+options, sql = parse_command_line()
+
+if 'help' in options:
+    print_usage()
+elif sql != None:
+    run_single_query(options, sql)
+else:
+    run_interactive_session(options)
+
+print_info()
