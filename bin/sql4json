@@ -65,8 +65,8 @@ set until "quit" or "exit" is enterred''' )
 
     print_info( '\r\noptions:')
     print_info( '\t--help             - Prints this help message')
-    print_info( '\t--csv              - Prints this help message')
-    print_info( '\t--csv-with-headers - Prints this help message')
+    print_info( '\t--csv              - Flattens data and outputs it as a csv')
+    print_info( '\t--csv-with-headers - Flattens data and outputs it as a csv with the first row being the column headers')
 
     print_info( '\r\nexamples:')
 
@@ -78,7 +78,7 @@ set until "quit" or "exit" is enterred''' )
     print_info( '\t\techo \'[{"id":1,"name":"test"},{"id":2,"name":"other"}]\'sql4json "SELECT id, name FROM some/path WHERE id==1"' )
 
     print_info( '\r\n\tInteractive session with data from the web')
-    print_info( '\t\tsql4json' )
+    print_info( '\t\tcurl "http://api.opencongress.org/people.json?first_name=Chris"|sql4json' )
     print_info()
 
 SUPPORTED_OPTIONS = ('help','csv','csv-with-headers')
