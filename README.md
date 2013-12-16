@@ -9,6 +9,10 @@ In choosing to make this project public I have refactored it so that the sql4jso
 ## Installation ##
 
     sudo pip install sql4json
+
+## Update ##
+
+    sudo pip install --upgrade sql4json
     
 ## Using the sql4json package in your code ##
 ##### Querying JSON  #####
@@ -27,6 +31,20 @@ In choosing to make this project public I have refactored it so that the sql4jso
     results_dictionary = query.get_results()
 
 ## Command Line Usage ##
+
+sql4json options [SQL*]
+
+\* If SQL is not specified on the command line, an interactive session will begin where
+you will be prompted to provide SQL queries. Multiple queries can be run on the same data
+set until "quit" or "exit" is enterred
+
+options:<br>
+--help             - Prints help message<br>
+--csv              - Flattens data and outputs it as a csv<br>
+--csv-with-headers - Flattens data and outputs it as a csv with the first row being the column headers<br>
+  
+## Getting Data to sql4json ##
+
 ##### JSON From File #####
 
     cat input_file.json|sql4json "SELECT * FROM some/place WHERE condition==true"
