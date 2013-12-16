@@ -8,5 +8,5 @@ setup(name='sql4json',
       author='Brian Hendriks',
       url='http://github.com/bheni/sql4json',
       packages=['sql4json', 'sql4json.boolean_expressions'],
-      scripts=['bin/sql4json']
+      scripts=['bin/sql4json', 'bin/mpack2json']
      )
