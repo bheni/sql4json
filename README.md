@@ -76,3 +76,6 @@ The FROM clause specifies the root of the query.  If the root is an array the qu
 
 The WHERE clause allows you to limit the data in the result sets. Supported operators are "==", "!=", ">", "<", ">=", "<=", "&&", "and", "||", "or", "in", "!" and supports parenthesis for orderring.
 
+## Major Contributors ##
+
+- Jason Gregori
