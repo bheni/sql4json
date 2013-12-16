@@ -36,7 +36,7 @@ sql4json options [SQL*]
 
 \* If SQL is not specified on the command line, an interactive session will begin where
 you will be prompted to provide SQL queries. Multiple queries can be run on the same data
-set until "quit" or "exit" is enterred
+set until "quit" or "exit" is entered
 
 options:<br>
 --help             - Prints help message<br>
