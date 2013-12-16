@@ -5,6 +5,7 @@ sql4json/__init__.py
 sql4json/data_query_engine.py
 sql4json/enums.py
 sql4json/exceptions.py
+sql4json/flat_data.py
 sql4json/sql4json.py
 sql4json/sql_statement.py
 sql4json/tokenizer.py

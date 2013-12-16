@@ -1,5 +1,13 @@
 ## Release Notes ##
 
+##### Version 0.2.1 December 15th 2013 #####
+
+Features
+- Command line history support for interactive sessions
+
+Notes
+- Yet to be tested on Windows
+
 ##### Version 0.2 December 15th 2013 #####
 
 Features
