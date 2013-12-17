@@ -4,7 +4,7 @@ sql4json was originally developed as a cli to help work with json data in a term
 
 In choosing to make this project public I have refactored it so that the sql4json package can be imported and used as a library to access json, or dictionary data.
 
-[Release Notes](https://github.com/bheni/sql4json/blob/master/RELEASE_NOTES.md) (Newest Version: 0.2.2 Released 2013.12.16)
+[Release Notes](https://github.com/bheni/sql4json/blob/master/RELEASE_NOTES.md) (Newest Version: 0.2.3 Released 2013.12.16)
 
 ## Installation ##
 
@@ -50,7 +50,7 @@ options:<br>
     cat input_file.json|sql4json "SELECT * FROM some/place WHERE condition==true"
 or
 
-    sql4json "SELECT * FROM some/place WHERE condition==true" <input_file.json
+    sql4json "SELECT * FROM some/place WHERE condition==true LIMIT 100" <input_file.json
     
 ##### JSON From the web #####
 
@@ -76,3 +76,6 @@ The FROM clause specifies the root of the query.  If the root is an array the qu
 
 The WHERE clause allows you to limit the data in the result sets. Supported operators are "==", "!=", ">", "<", ">=", "<=", "&&", "and", "||", "or", "in", "!" and supports parenthesis for orderring.
 
+##### LIMIT Clause #####
+
+Limits the number of results output

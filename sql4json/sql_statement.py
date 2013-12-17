@@ -7,8 +7,8 @@ Organizes tokens into select, from, and where sections and provides accesssor
 functions to get the tokens from these sections.
 '''
 class SQLStatement(object):
-    SECTIONS = CEnum(("SELECT", "FROM", "WHERE"))
-    SECTION_NAMES = ("select", "from", "where")
+    SECTIONS = CEnum(("SELECT", "FROM", "WHERE", "LIMIT"))
+    SECTION_NAMES = ("select", "from", "where", "limit")
     SECTION_NAMES_SET = frozenset(SECTION_NAMES)
 
     def __init__(self, sql_statement_string):
@@ -23,7 +23,7 @@ class SQLStatement(object):
     def get_start_of_each_section(self):
         lower = self.sql_statement_string.lower()
         quote_char = None
-        section_start_indices = [-1,-1,-1]
+        section_start_indices = [-1] * SQLStatement.SECTIONS.COUNT
         current_chars = []
         start_index = 0
 
@@ -64,7 +64,7 @@ class SQLStatement(object):
         return section_start_indices
 
     def parse_sections(self, start_indices):
-        self.sections = [None, None, None]
+        self.sections = [None] * SQLStatement.SECTIONS.COUNT
         sorted_start_indices = sorted(start_indices)
 
         for i in range(len(sorted_start_indices)):
@@ -87,3 +87,6 @@ class SQLStatement(object):
 
     def get_where_section(self):
         return self.sections[SQLStatement.SECTIONS.WHERE]
+
+    def get_limit_section(self):
+        return self.sections[SQLStatement.SECTIONS.LIMIT]

@@ -8,7 +8,7 @@ def get_elements_by_path(data, path):
     return get_elements_by_path_tokens(data, list(tokenizer))
 
 def get_elements_by_path_tokens(data, path_tokens):
-    token_should_be_seperator = (path_tokens[0] in PATH_SEPERATORS) if len(path_tokens) > 0 else False
+    initial_token_should_be_seperator = (path_tokens[0] in PATH_SEPERATORS) if len(path_tokens) > 0 else False
     
     elements = []
 
@@ -18,6 +18,7 @@ def get_elements_by_path_tokens(data, path_tokens):
         root_items = [data]
 
     for current in root_items:
+        token_should_be_seperator = initial_token_should_be_seperator
         for i,token in enumerate(path_tokens):
             if token_should_be_seperator:
                 if not token in PATH_SEPERATORS:

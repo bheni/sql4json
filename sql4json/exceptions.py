@@ -10,3 +10,6 @@ class WhereClauseException(SQLStatementFormatException):
     def __init__(self,message):
         super(WhereClauseException, self).__init__(message)
 
+class LimitClauseException(SQLStatementFormatException):
+    def __init__(self,message):
+        super(LimitClauseException, self).__init__(message)

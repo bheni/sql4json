@@ -1,5 +1,13 @@
 ## Release Notes ##
 
+##### Version 0.2.3 December 16th 2013 #####
+
+Bug Fixes
+- Fixed issue when root is an array and selecting from /
+
+Features
+- Added LIMIT clause
+
 ##### Version 0.2.2 December 16th 2013 #####
 
 Features

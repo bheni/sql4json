@@ -3,7 +3,7 @@ from utils import *
 from exceptions import *
 from sql_statement import SQLStatement
 from tokenizer import Tokenizer
-from where_clause_evaluation_engine import WhereClauseEvaluationEngine
+from where_clause_evaluation_engine import *
 
 from boolean_expressions.tree import BooleanExpressionTree
 
@@ -19,6 +19,8 @@ class DataQueryEngine(object):
         self.init_where_boolean_tree()
         
         self.query()
+        self.sort()
+        self.apply_limit()
 
     def init_from_roots(self):
         from_section = self.sql_statement.get_from_section()
@@ -121,6 +123,21 @@ class DataQueryEngine(object):
             return True
         else:
             return self.where_tree.evaluate(node)
+
+    def sort(self):
+        pass
+
+    def apply_limit(self):
+        limit = self.sql_statement.get_limit_section()
+
+        if limit != None:
+            if len(limit) != 1 or not limit[0].isdigit():
+                raise LimitClauseException('"%s" is not a valid limit' % ' '.join(limit))
+            else:
+                limit = int(limit)
+
+                while len(self.results) > limit:
+                    self.results.pop()
 
     def get_results(self):
         return self.results

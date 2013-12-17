@@ -26,6 +26,16 @@ class DataQueryEngineTests(unittest.TestCase):
 
         self.assertEqual([{"id":1,"name":"brian"},{"id":2,"name":"DRo"},{"id":3,"name":"Logan"}], query_engine.get_results())
 
+    def test_select_on_array_from_root(self):
+        data = [
+            {"id":1,"name":"brian", "awesome":True},
+            {"id":2,"name":"DRo", "awesome":True},
+            {"id":3,"name":"Logan", "awesome":False}
+        ]
+        query_engine = DataQueryEngine(data, "SELECT id,name FROM /")
+
+        self.assertEqual([{"id":1,"name":"brian"},{"id":2,"name":"DRo"},{"id":3,"name":"Logan"}], query_engine.get_results())
+
     def test_select_from(self):
         data = {
             "people":[
@@ -185,6 +195,20 @@ class DataQueryEngineTests(unittest.TestCase):
         query_engine = DataQueryEngine(data, 'SELECT name FROM people WHERE employer/name=="employer 1"')
 
         self.assertEqual([{"name":"brian"}], query_engine.get_results())
+
+    def test_limit(self):
+        data = {
+            "people":[
+                {"id":1,"name":"brian", "awesome":True,"employer":{"id":1,"name":"employer 1"}},
+                {"id":2,"name":"DRo", "awesome":True,"employer":{"id":2,"name":"employer 2"}},
+                {"id":3,"name":"Logan", "awesome":False,"employer":None}
+            ], 
+            "other":68
+        }
+
+        query_engine = DataQueryEngine(data, 'SELECT name FROM people LIMIT 2')
+
+        self.assertEqual([{"name":"brian"},{"name":"DRo"}], query_engine.get_results())
 
 
     def test_where_operands_are_verified(self):
