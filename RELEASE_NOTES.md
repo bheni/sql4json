@@ -1,5 +1,10 @@
 ## Release Notes ##
 
+##### Version 0.2.2 December 16th 2013 #####
+
+Features
+- Added utility mpack2json.  Can now feed message pack data through mpack2json and pipe it to sql4json
+
 ##### Version 0.2.1 December 15th 2013 #####
 
 Features
