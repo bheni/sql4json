@@ -10,10 +10,18 @@ import atexit
 from sql4json.sql4json import Sql4Json
 from sql4json.flat_data import FlatData
 
+def hack_remove_garbage_printed_by_readline(stdin_data):
+    readline_garbage_data = ''.join((chr(0x1b),'[','?','1','0','3','4','h'))
+
+    if stdin_data.startswith(readline_garbage_data):
+        stdin_data = stdin_data[len(readline_garbage_data):]
+
+    return stdin_data
+
 def readjson_from_stdin_and_reinit_stdin():
     stdin_data = sys.stdin.read()
     stdin_data = stdin_data.strip()
-    stdin_data = stdin_data.replace(''.join((chr(0x1b),'[','?','1','0','3','4','h')), '')
+    stdin_data = hack_remove_garbage_printed_by_readline(stdin_data)
 
     try:
         if sys.platform == 'win32':
