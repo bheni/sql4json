@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='sql4json',
-      version='0.2.3',
+      version='0.2.4',
       description='Python SQL library and command line for querying JSON documents',
       author='Brian Hendriks',
       url='http://github.com/bheni/sql4json',
