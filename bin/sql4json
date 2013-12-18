@@ -12,6 +12,8 @@ from sql4json.flat_data import FlatData
 
 def readjson_from_stdin_and_reinit_stdin():
     stdin_data = sys.stdin.read()
+    stdin_data = stdin_data.strip()
+    stdin_data = stdin_data.replace(''.join((chr(0x1b),'[','?','1','0','3','4','h')), '')
 
     try:
         if sys.platform == 'win32':

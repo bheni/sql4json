@@ -8,7 +8,11 @@ In choosing to make this project public I have refactored it so that the sql4jso
 
 ## Installation ##
 
-    easy_install readline
+##### mac prerequisite #####
+
+    sudo easy_install readline
+
+##### pip install #####
     sudo pip install sql4json
 
 ## Update ##
