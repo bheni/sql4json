@@ -1,5 +1,10 @@
 ## Release Notes ##
 
+##### Version 0.2.4 December 17th 2013 #####
+
+Bug Fixes
+- Fixes for issues discovered with OSX Mavericks related to the readline package.
+
 ##### Version 0.2.3 December 16th 2013 #####
 
 Bug Fixes
