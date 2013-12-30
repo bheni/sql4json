@@ -9,4 +9,4 @@ setup(name='sql4json',
       url='http://github.com/bheni/sql4json',
       packages=['sql4json', 'sql4json.boolean_expressions'],
       scripts=['bin/sql4json', 'bin/mpack2json']
-     )
+)

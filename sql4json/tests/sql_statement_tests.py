@@ -3,6 +3,7 @@ import unittest
 from sql4json.sql_statement import SQLStatement
 from sql4json.exceptions import SQLStatementFormatException
 
+
 class SQLStatementTests(unittest.TestCase):
     def test_parse_empty_statement(self):
         try:
@@ -13,7 +14,7 @@ class SQLStatementTests(unittest.TestCase):
 
     def test_select(self):
         sql_statement = SQLStatement("select *")
-        
+
         self.assertEqual("*", sql_statement.get_select_section())
         self.assertEqual(None, sql_statement.get_from_section())
         self.assertEqual(None, sql_statement.get_where_section())
@@ -21,7 +22,7 @@ class SQLStatementTests(unittest.TestCase):
 
     def test_select_from(self):
         sql_statement = SQLStatement("select * from some/path")
-        
+
         self.assertEqual("*", sql_statement.get_select_section())
         self.assertEqual("some/path", sql_statement.get_from_section())
         self.assertEqual(None, sql_statement.get_where_section())
@@ -29,15 +30,16 @@ class SQLStatementTests(unittest.TestCase):
 
     def test_from_where(self):
         sql_statement = SQLStatement("SELECT id, key3 FROM somewhere WHERE key1==1 or (key2 == 'string value'&&key3>4")
-        
+
         self.assertEqual("id, key3", sql_statement.get_select_section())
         self.assertEqual("somewhere", sql_statement.get_from_section())
         self.assertEqual("key1==1 or (key2 == 'string value'&&key3>4", sql_statement.get_where_section())
         self.assertEqual(None, sql_statement.get_limit_section())
 
     def test_from_where_limit(self):
-        sql_statement = SQLStatement("SELECT id, key3 FROM somewhere WHERE key1==1 or (key2 == 'string value'&&key3>4 LIMIT 5")
-        
+        sql_statement = SQLStatement(
+            "SELECT id, key3 FROM somewhere WHERE key1==1 or (key2 == 'string value'&&key3>4 LIMIT 5")
+
         self.assertEqual("id, key3", sql_statement.get_select_section())
         self.assertEqual("somewhere", sql_statement.get_from_section())
         self.assertEqual("key1==1 or (key2 == 'string value'&&key3>4", sql_statement.get_where_section())

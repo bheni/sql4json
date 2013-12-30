@@ -1,6 +1,6 @@
 class CEnum(object):
     def __init__(self, enum_items):
-    	self.__enum_items = enum_items
+        self.__enum_items = enum_items
 
         index = 0
         for item in enum_items:
@@ -10,12 +10,13 @@ class CEnum(object):
         self.COUNT = index
 
     def choices(self):
-    	choices = []
+        choices = []
 
-    	for item in self.__enum_items:
-    		choices.append( (self.__dict__[item], item) )
+        for item in self.__enum_items:
+            choices.append((self.__dict__[item], item))
 
-    	return choices
+        return choices
+
 
 class JavaEnum(object):
     class JavaEnumItem(object):
@@ -27,7 +28,7 @@ class JavaEnum(object):
         self.__vals = []
         for item in enum_items:
             self.__dict__[item[0]] = JavaEnum.JavaEnumItem(item, enum_fields)
-            self.__vals.append( self.__dict__[item[0]] )
+            self.__vals.append(self.__dict__[item[0]])
 
     def values(self):
         return self.__vals

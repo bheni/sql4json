@@ -1,30 +1,35 @@
-from tokenizer import Tokenizer
+"""
+Organizes tokens into select, from, and where sections and provides accesssor
+functions to get the tokens from these sections.
+"""
+
 from enums import CEnum
 from exceptions import SQLStatementFormatException
 
-'''
-Organizes tokens into select, from, and where sections and provides accesssor
-functions to get the tokens from these sections.
-'''
+
 class SQLStatement(object):
     SECTIONS = CEnum(("SELECT", "FROM", "WHERE", "LIMIT"))
     SECTION_NAMES = ("select", "from", "where", "limit")
     SECTION_NAMES_SET = frozenset(SECTION_NAMES)
 
     def __init__(self, sql_statement_string):
+        self.sections = None
+
         self.sql_statement_string = sql_statement_string.strip()
 
         if not self.sql_statement_string.lower().startswith("select"):
-            raise SQLStatementFormatException('"%s" does not begin with a valid select statement.' % self.sql_statement_string)
+            raise SQLStatementFormatException(
+                '"%s" does not begin with a valid select statement.' % self.sql_statement_string)
 
         section_start_indices = self.get_start_of_each_section()
-        self.parse_sections( section_start_indices )
+        self.parse_sections(section_start_indices)
 
     def get_start_of_each_section(self):
         lower = self.sql_statement_string.lower()
         quote_char = None
         section_start_indices = [-1] * SQLStatement.SECTIONS.COUNT
         current_chars = []
+        current_word = None
         start_index = 0
 
         for i in range(len(self.sql_statement_string)):
@@ -34,12 +39,12 @@ class SQLStatement(object):
                 quote_char = None
                 current_chars = []
                 start_index = i
-            
+
             elif lower_char in ('"', "'"):
                 quote_char = lower_char
                 current_chars = [lower_char]
                 start_index = i
-            
+
             elif lower_char.isspace():
                 current_word = ''.join(current_chars)
                 if current_word in SQLStatement.SECTION_NAMES_SET:
@@ -56,7 +61,7 @@ class SQLStatement(object):
             else:
                 current_chars.append(lower_char)
 
-        if quote_char != None:
+        if quote_char is not None:
             raise SQLStatementFormatException('" mismatch in %s' % self.sql_statement_string)
         elif ''.join(current_chars) in SQLStatement.SECTION_NAMES_SET:
             raise SQLStatementFormatException('Invalid %s section' % current_word)

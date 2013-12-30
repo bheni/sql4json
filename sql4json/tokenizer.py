@@ -1,10 +1,12 @@
+"""
+Basic class for splitting a string up into tokens.
+"""
+
 from enums import CEnum
 
-'''
-Basic class for splitting a string up into tokens.
-'''
+
 class Tokenizer(object):
-    TOKEN_TYPES = CEnum(("NONE","ALPHANUM","SYMBOL","WHITESPACE","QUOTEDSTRING","PARENOPEN","PARENCLOSE"))
+    TOKEN_TYPES = CEnum(("NONE", "ALPHANUM", "SYMBOL", "WHITESPACE", "QUOTEDSTRING", "PARENOPEN", "PARENCLOSE"))
 
     QUOTE_CHARS = frozenset(('"', "'"))
 
@@ -27,7 +29,7 @@ class Tokenizer(object):
 
     @staticmethod
     def is_paren_type(token_type):
-        return token_type in (Tokenizer.TOKEN_TYPES.PARENOPEN,Tokenizer.TOKEN_TYPES.PARENCLOSE)
+        return token_type in (Tokenizer.TOKEN_TYPES.PARENOPEN, Tokenizer.TOKEN_TYPES.PARENCLOSE)
 
     def __init__(self, str_to_parse):
         self.unparsed_string = str_to_parse
@@ -39,7 +41,7 @@ class Tokenizer(object):
         token = self.unparsed_string[start:end].strip()
 
         if len(token) > 0:
-            self.tokens.append( token )
+            self.tokens.append(token)
 
         return end
 
@@ -49,17 +51,18 @@ class Tokenizer(object):
         current_token_type = Tokenizer.TOKEN_TYPES.NONE
 
         for i, char in enumerate(self.unparsed_string):
-            if current_quote_char != None:
+            if current_quote_char is not None:
                 if current_quote_char == char:
-                    start = self._add_token(start, i+1)
+                    start = self._add_token(start, i + 1)
 
                     current_quote_char = None
                     current_token_type = Tokenizer.TOKEN_TYPES.NONE
 
             else:
-                token_type = Tokenizer.get_token_type( char )
+                token_type = Tokenizer.get_token_type(char)
 
-                if (token_type != current_token_type or Tokenizer.is_paren_type(token_type)) and current_token_type not in Tokenizer.EMPTY_STIRNG_TYPES:
+                if (token_type != current_token_type or Tokenizer.is_paren_type(
+                        token_type)) and current_token_type not in Tokenizer.EMPTY_STIRNG_TYPES:
                     start = self._add_token(start, i)
 
                 if token_type == Tokenizer.TOKEN_TYPES.QUOTEDSTRING:
@@ -70,7 +73,7 @@ class Tokenizer(object):
         if start != len(self.unparsed_string):
             self._add_token(start, len(self.unparsed_string))
 
-    def __getitem__(self,index):
+    def __getitem__(self, index):
         return self.tokens[index]
 
     def __len__(self):
@@ -80,7 +83,7 @@ class Tokenizer(object):
         if isinstance(other, Tokenizer):
             return self.tokens == other.tokens
         elif isinstance(other, list) or isinstance(other, tuple):
-            return self.tokens == other 
+            return self.tokens == other
         else:
             return False
 

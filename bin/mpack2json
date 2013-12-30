@@ -2,15 +2,18 @@
 import sys
 import json
 
-def print_error(error_str='',include_newline=True):
+
+def print_error(error_str='', include_newline=True):
     output_str = '\033[91m' + error_str + '\x1B[m'
     print_info(output_str)
 
-def print_info(info_str='',include_newline=True):
+
+def print_info(info_str='', include_newline=True):
     if include_newline:
         print >> sys.stderr, (info_str)
     else:
         sys.stderr.write(info_str)
+
 
 try:
     import msgpack
