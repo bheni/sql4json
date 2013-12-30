@@ -1,5 +1,10 @@
 ## Release Notes ##
 
+##### Version 0.2.5 December 30th 2013 #####
+
+Bug Fixes
+- Select order now preserved in csv output
+
 ##### Version 0.2.4 December 17th 2013 #####
 
 Bug Fixes
