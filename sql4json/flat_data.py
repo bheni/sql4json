@@ -1,11 +1,11 @@
-
 class FlatData(object):
-    def __init__(self, data):
+    def __init__(self, data, order=None):
         self.data = data
         self.columns = []
         self.table = {}
         self.headers = []
         self.rows = []
+        self.order = order
 
         self.flatten_data()
 
@@ -22,13 +22,12 @@ class FlatData(object):
 
         self.transpose_table(row_count)
 
-
     def flatten_node(self, node, row_count):
         self.extract_data_from_node('', node, '', row_count)
 
         for column in self.columns:
-            if len(self.table[column]) != (row_count+1):
-                self.table[column].append( None )
+            if len(self.table[column]) != (row_count + 1):
+                self.table[column].append(None)
 
     def extract_data_from_node(self, name, node, path, row_count):
         if isinstance(node, list) or isinstance(node, tuple):
@@ -48,7 +47,7 @@ class FlatData(object):
             if column_name not in self.columns:
                 self.add_new_colunm(column_name, row_count)
 
-            self.table[column_name].append( node )
+            self.table[column_name].append(node)
 
     def add_new_colunm(self, column_name, row_count):
         if row_count == 0:
@@ -58,11 +57,31 @@ class FlatData(object):
 
         self.columns.append(column_name)
 
+    def get_ordered_columns(self):
+        if self.order is None:
+            return self.columns
+        else:
+            ordered_columns = []
+
+            for column in self.order:
+                if column not in self.columns:
+                    raise Exception('Unknown column ' + column)
+                else:
+                    ordered_columns.append(column)
+
+            for column in self.columns:
+                if column not in ordered_columns:
+                    ordered_columns.append(column)
+
+            return ordered_columns
+
     def transpose_table(self, row_count):
         for i in range(row_count):
             self.rows.append([])
 
-        for column in self.columns:
+        ordered_columns = self.get_ordered_columns()
+
+        for column in ordered_columns:
             self.headers.append(column)
             column_data = self.table[column]
 

@@ -2,21 +2,24 @@
 
 import os
 import sys
-import json
 import traceback
-import readline
 import atexit
+
+import readline
+from sql4json.utils import split_on_any
 
 from sql4json.sql4json import Sql4Json
 from sql4json.flat_data import FlatData
 
+
 def hack_remove_garbage_printed_by_readline(stdin_data):
-    readline_garbage_data = ''.join((chr(0x1b),'[','?','1','0','3','4','h'))
+    readline_garbage_data = ''.join((chr(0x1b), '[', '?', '1', '0', '3', '4', 'h'))
 
     if stdin_data.startswith(readline_garbage_data):
         stdin_data = stdin_data[len(readline_garbage_data):]
 
     return stdin_data
+
 
 def readjson_from_stdin_and_reinit_stdin():
     stdin_data = sys.stdin.read()
@@ -27,11 +30,12 @@ def readjson_from_stdin_and_reinit_stdin():
         if sys.platform == 'win32':
             sys.stdin = open("CON:", "r")
         else:
-            sys.stdin = open('/dev/tty','r')
+            sys.stdin = open('/dev/tty', 'r')
     except:
         raise Exception('Unable to read from stdin')
 
     return stdin_data
+
 
 def set_history_file():
     histfile = os.path.join(os.path.expanduser("~"), ".sql4json")
@@ -44,59 +48,67 @@ def set_history_file():
     atexit.register(readline.write_history_file, histfile)
     del histfile
 
-def print_error(error_str='',include_newline=True):
+
+def print_error(error_str='', include_newline=True):
     output_str = '\033[91m' + error_str + '\x1B[m'
     print_info(output_str)
 
-def print_info(info_str='',include_newline=True):
+
+def print_info(info_str='', include_newline=True):
     if include_newline:
         print >> sys.stderr, (info_str)
     else:
         sys.stderr.write(info_str)
 
+
 def print_csv_row(row):
     column_values = []
 
     for item in row:
-        if item == None:
+        if item is None:
             column_values.append('')
         else:
             str_val = unicode(item)
-            column_values.append( str_val.replace(',','%2C') )
+            column_values.append(str_val.replace(',', '%2C'))
 
     print ','.join(column_values)
 
+
 def print_usage():
-    print_info( '\r\nusage: sql4json options [SQL*]' )
-    print_info( 
-'''\r\n* If SQL is not specified on the command line, an interactive session will begin where
-you will be prompted to provide SQL queries. Multiple queries can be run on the same data
-set until "quit" or "exit" is enterred''' )
+    print_info('\r\nusage: sql4json options [SQL*]')
+    print_info(
+        '''\r\n* If SQL is not specified on the command line, an interactive session will begin where
+        you will be prompted to provide SQL queries. Multiple queries can be run on the same data
+        set until "quit" or "exit" is enterred''')
 
-    print_info( '\r\noptions:')
-    print_info( '\t--help             - Prints this help message')
-    print_info( '\t--csv              - Flattens data and outputs it as a csv')
-    print_info( '\t--csv-with-headers - Flattens data and outputs it as a csv with the first row being the column headers')
+    print_info('\r\noptions:')
+    print_info('\t--help             - Prints this help message')
+    print_info('\t--csv              - Flattens data and outputs it as a csv')
+    print_info(
+        '\t--csv-with-headers - Flattens data and outputs it as a csv with the first row being the column headers')
 
-    print_info( '\r\nexamples:')
+    print_info('\r\nexamples:')
 
-    print_info( '\r\n\tRun SQL query on data from file')
-    print_info( '\t\tsql4json "SELECT id, name FROM some/path WHERE condition == true" <input_file.json' )
-    print_info( '\t\tcat input_file.json|sql4json "SELECT id, name FROM some/path WHERE condition == true"' )
+    print_info('\r\n\tRun SQL query on data from file')
+    print_info('\t\tsql4json "SELECT id, name FROM some/path WHERE condition == true" <input_file.json')
+    print_info('\t\tcat input_file.json|sql4json "SELECT id, name FROM some/path WHERE condition == true"')
 
-    print_info( '\r\n\tRun SQL query on data from command line')
-    print_info( '\t\techo \'[{"id":1,"name":"test"},{"id":2,"name":"other"}]\'sql4json "SELECT id, name FROM some/path WHERE id==1"' )
+    print_info('\r\n\tRun SQL query on data from command line')
+    print_info(
+        '\t\techo \'[{"id":1,"name":"test"},{"id":2,"name":"other"}]\'sql4json "SELECT id, name FROM some/path WHERE id==1"')
 
-    print_info( '\r\n\tInteractive session with data from the web')
-    print_info( '\t\tcurl "http://api.opencongress.org/people.json?first_name=Chris"|sql4json' )
+    print_info('\r\n\tInteractive session with data from the web')
+    print_info('\t\tcurl "http://api.opencongress.org/people.json?first_name=Chris"|sql4json')
     print_info()
 
-SUPPORTED_OPTIONS = ('help','csv','csv-with-headers')
+
+SUPPORTED_OPTIONS = ('help', 'csv', 'csv-with-headers')
 SUPPORTED_OPTION_SET = frozenset(SUPPORTED_OPTIONS)
 
+
 def parse_command_line():
-    options = set()
-    sql = None
+    option_args = set()
+    sql_arg = None
 
     for i in range(1, len(sys.argv)):
         arg = sys.argv[i]
@@ -108,24 +120,29 @@ def parse_command_line():
                 print_error("Unknown option %s" % arg)
                 exit(1)
             else:
-                options.add(option_string)
+                option_args.add(option_string)
 
-        elif sql == None:
-            sql = arg
+        elif sql_arg is None:
+            sql_arg = arg
         else:
             print_error("Unexpected paramater %s" % arg)
 
-    return options, sql
+    return option_args, sql_arg
 
-def run_single_query(options, sql_str):
+
+def run_single_query(option_args, sql_str):
     try:
         json_str = readjson_from_stdin_and_reinit_stdin().strip()
         query = Sql4Json(json_str, sql_str)
 
-        if 'csv' in options or 'csv-with-headers' in options:
-            flat_data = FlatData(query.get_results())
+        if 'csv' in option_args or 'csv-with-headers' in option_args:
+            sql_statement = query.query_engine.get_sql_statement()
+            select_section = sql_statement.get_select_section()
+            select_items = split_on_any(select_section, frozenset((',', ' ', '\t', '\n', '\r')))
 
-            if 'csv-with-headers' in options:
+            flat_data = FlatData(query.get_results(), select_items)
+
+            if 'csv-with-headers' in option_args:
                 print_csv_row(flat_data.get_headers())
 
             rows = flat_data.get_rows()
@@ -137,14 +154,15 @@ def run_single_query(options, sql_str):
 
     except Exception, e:
         traceback.print_exc()
-        print_error( str(e) )
-        exit(1)    
+        print_error(str(e))
+        exit(1)
+
 
 def run_interactive_session(options):
     json_str = readjson_from_stdin_and_reinit_stdin().strip()
     set_history_file()
 
-    while True: 
+    while True:
         try:
             input_str = raw_input('\r\nsql4json2>').strip()
             in_lower = input_str.lower()
@@ -157,14 +175,14 @@ def run_interactive_session(options):
 
         except Exception, e:
             #traceback.print_exc()
-            print_error( str(e) )
+            print_error(str(e))
 
 
 options, sql = parse_command_line()
 
 if 'help' in options:
     print_usage()
-elif sql != None:
+elif sql is not None:
     run_single_query(options, sql)
 else:
     run_interactive_session(options)
