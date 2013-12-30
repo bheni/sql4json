@@ -140,7 +140,7 @@ def run_single_query(option_args, sql_str):
             select_section = sql_statement.get_select_section()
             select_items = split_on_any(select_section, frozenset((',', ' ', '\t', '\n', '\r')))
 
-            flat_data = FlatData(query.get_results(), select_items)
+            flat_data = FlatData(query.get_results(), select_items if '*' not in select_items else None)
 
             if 'csv-with-headers' in option_args:
                 print_csv_row(flat_data.get_headers())
