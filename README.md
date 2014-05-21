@@ -4,7 +4,7 @@ sql4json was originally developed as a cli to help work with json data in a term
 
 In choosing to make this project public I have refactored it so that the sql4json package can be imported and used as a library to access json, or dictionary data.
 
-[Release Notes](https://github.com/bheni/sql4json/blob/master/RELEASE_NOTES.md) (Newest Version: 0.2.5 Released 2013.12.30)
+[Release Notes](https://github.com/bheni/sql4json/blob/master/RELEASE_NOTES.md) (Newest Version: 0.3.0 Released 2014.05.20)
 
 ## Installation ##
 
@@ -45,6 +45,7 @@ set until "quit" or "exit" is entered
 
 options:<br>
 --help             - Prints help message<br>
+--log-mode         - Processes each line as a seperate input<br>
 --csv              - Flattens data and outputs it as a csv<br>
 --csv-with-headers - Flattens data and outputs it as a csv with the first row being the column headers<br>
   
