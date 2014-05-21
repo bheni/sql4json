@@ -83,6 +83,7 @@ def print_usage():
 
     print_info('\r\noptions:')
     print_info('\t--help             - Prints this help message')
+    print_info('\t--log-mode         - Processes each line as a seperate input')
     print_info('\t--csv              - Flattens data and outputs it as a csv')
     print_info(
         '\t--csv-with-headers - Flattens data and outputs it as a csv with the first row being the column headers')
@@ -102,7 +103,7 @@ def print_usage():
     print_info()
 
 
-SUPPORTED_OPTIONS = ('help', 'csv', 'csv-with-headers')
+SUPPORTED_OPTIONS = ('help', 'csv', 'csv-with-headers', 'log-mode')
 SUPPORTED_OPTION_SET = frozenset(SUPPORTED_OPTIONS)
 
 
@@ -130,27 +131,59 @@ def parse_command_line():
     return option_args, sql_arg
 
 
+def print_results(option_args, query):
+    if 'csv' in option_args or 'csv-with-headers' in option_args:
+        sql_statement = query.query_engine.get_sql_statement()
+        select_section = sql_statement.get_select_section()
+        select_items = split_on_any(select_section, frozenset((',', ' ', '\t', '\n', '\r')))
+
+        flat_data = FlatData(query.get_results(), select_items if '*' not in select_items else None)
+
+        if 'csv-with-headers' in option_args:
+            print_csv_row(flat_data.get_headers())
+
+        rows = flat_data.get_rows()
+
+        for row in rows:
+            print_csv_row(row)
+    else:
+        print str(query)
+
+
+def run_in_log_mode(option_args, sql_str):
+    try:
+        while True:
+            stdin_data = sys.stdin.readline()
+            stdin_data = stdin_data.strip()
+            json_str = hack_remove_garbage_printed_by_readline(stdin_data)
+            #json_str = readjson_from_stdin_and_reinit_stdin().strip()
+
+            try:
+                query = Sql4Json(json_str, sql_str)
+
+                print_results(option_args, query)
+            except ValueError:
+                pass
+            except KeyboardInterrupt:
+                return
+            except Exception, e:
+                traceback.print_exc()
+                print_error(str(e))
+                exit(1)
+    except KeyboardInterrupt:
+        pass
+    except Exception, e:
+        traceback.print_exc()
+        print_error(str(e))
+        exit(1)
+
+
 def run_single_query(option_args, sql_str):
     try:
         json_str = readjson_from_stdin_and_reinit_stdin().strip()
         query = Sql4Json(json_str, sql_str)
 
-        if 'csv' in option_args or 'csv-with-headers' in option_args:
-            sql_statement = query.query_engine.get_sql_statement()
-            select_section = sql_statement.get_select_section()
-            select_items = split_on_any(select_section, frozenset((',', ' ', '\t', '\n', '\r')))
-
-            flat_data = FlatData(query.get_results(), select_items if '*' not in select_items else None)
-
-            if 'csv-with-headers' in option_args:
-                print_csv_row(flat_data.get_headers())
-
-            rows = flat_data.get_rows()
-
-            for row in rows:
-                print_csv_row(row)
-        else:
-            print str(query)
+        print_results(option_args, query)
 
     except Exception, e:
         traceback.print_exc()
@@ -183,8 +216,15 @@ options, sql = parse_command_line()
 if 'help' in options:
     print_usage()
 elif sql is not None:
-    run_single_query(options, sql)
+    if 'log-mode' in options:
+        run_in_log_mode(options, sql)
+    else:
+        run_single_query(options, sql)
 else:
-    run_interactive_session(options)
+    if 'log-mode' in options:
+        print_error("SQL must be passed in log mode")
+        print_usage()
+    else:
+        run_interactive_session(options)
 
 print_info()
