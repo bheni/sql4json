@@ -51,11 +51,11 @@ def get_elements_by_path_tokens(data, path_tokens):
             break
 
     if array_of_arrays:
-        flattened_array = []
+        flattenned_array = []
         for element in elements:
-            flattened_array.extend(element)
+            flattenned_array.extend(element)
 
-        elements = flattened_array
+        elements = flattenned_array
 
     return len(elements) > 0, elements
 
