@@ -110,6 +110,8 @@ class DataQueryEngine(object):
                         parent_dest[current_key] = current
                     else:
                         matching_data = current
+                if element == '__key__':
+                    parent_dest['__key__'] = current.keys()
                 else:
                     if element in current:
                         destination[element] = current[element]
