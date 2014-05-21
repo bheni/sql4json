@@ -1,5 +1,11 @@
 ## Release Notes ##
 
+##### Version 0.3.0 May 20th 2014 #####
+
+Features
+- Added --log-mode for parsing each line as json input
+- Added `__key__` keyword for retreiving all the keys at some given path
+
 ##### Version 0.2.5 December 30th 2013 #####
 
 Bug Fixes
